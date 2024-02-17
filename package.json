@@ -1,0 +1,26 @@
+{
+  "name": "loready-bot",
+  "version": "1.0.0",
+  "description": "로스트아크 레이드 스케줄링 디스코드 봇",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EthanJcoding/LoReady-Bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EthanJcoding/LoReady-Bot/issues"
+  },
+  "homepage": "https://github.com/EthanJcoding/LoReady-Bot#readme",
+  "dependencies": {
+    "discord.js": "^14.14.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0"
+  }
+}
