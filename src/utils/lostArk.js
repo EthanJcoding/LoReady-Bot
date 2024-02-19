@@ -82,7 +82,7 @@ const getCharsData = async chaName => {
 
   for (let i = 0; i < characters.length; i++) {
     let data = await axios.get(
-      url + `/armories/characters/${characters[i].characterName}/profiles`,
+      url + `/armories/characters/${characters[i].CharacterName}/profiles`,
       {
         headers: {
           accept: "application/json",
@@ -91,10 +91,12 @@ const getCharsData = async chaName => {
       }
     );
 
-    characters[i].CharacterImage = data.data.CharacterImage;
-    characters[i].CharacterLevel = data.data.CharacterLevel;
-    characters[i].ItemAvgLevel = data.data.ItemAvgLevel;
-    characters[i].ServerName = data.data.ServerName;
+    if (data) {
+      characters[i].CharacterImage = data.data.CharacterImage;
+      characters[i].CharacterLevel = data.data.CharacterLevel;
+      characters[i].ItemAvgLevel = data.data.ItemAvgLevel;
+      characters[i].ServerName = data.data.ServerName;
+    } else return null;
   }
 
   return characters;
