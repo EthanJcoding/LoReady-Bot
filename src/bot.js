@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import { config } from "dotenv";
 import { handleCommandInteraction } from "./interaction.js";
-import { saveChannel, deleteChannel } from "./utils/pocketBase.js";
+import { saveChannel, deleteChannel } from "./api/pocketBase.js";
 
 config();
 

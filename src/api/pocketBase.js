@@ -6,12 +6,20 @@ const saveChannel = async data => {
   await pb.collection("channel").create(data);
 };
 
-const getChannelData = async guildId => {
+const getChannelId = async guildId => {
   const record = await pb
     .collection("channel")
     .getFirstListItem(`channelId="${guildId}"`);
 
   return record.id;
+};
+
+const getUserData = async userId => {
+  const record = await pb
+    .collection("members")
+    .getFirstListItem(`userId="${userId}"`);
+
+  return record;
 };
 
 // member컬렉션을 전부 조회하고 거기서 userId가 같은지 판단하여 리턴
@@ -43,11 +51,19 @@ const updateChannelRelUserData = async (RECORD_ID, data) => {
   return record;
 };
 
+const createSchedule = async data => {
+  const record = await pb.collection("schedules").create(data);
+
+  return record;
+};
+
 export {
   saveChannel,
   deleteChannel,
   saveUserData,
   updateChannelRelUserData,
-  getChannelData,
+  getChannelId,
+  getUserData,
   isUserAlreadyRegistered,
+  createSchedule,
 };
