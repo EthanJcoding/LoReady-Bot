@@ -5,66 +5,65 @@ import {
 } from "discord.js";
 import { getCharsData } from "./api/lostArk.js";
 import { isDateTimeValid } from "./utils/isDateTimeValid.js";
-import {
-  saveUserData,
-  updateChannelRelUserData,
-  getChannelId,
-  isUserAlreadyRegistered,
-  getUserData,
-  createSchedule,
-} from "./api/pocketBase.js";
+import { handleSaveUser } from "./api/index.js";
 
 async function handleCommandInteraction(interaction) {
   const { commandName, options } = interaction;
+  const guild = interaction.member.guild;
 
   if (interaction.isCommand()) {
-    if (commandName === "test") {
-      // try {
-      // } catch (err) {
-      // }
-    }
     if (commandName === "등록하기") {
       const chaName = options.getString("캐릭터명");
       const guildId = interaction.guildId;
       const username = interaction.user.username;
       const globalName = interaction.user.globalName;
       const userId = interaction.user.id;
-      const CHANNEL_ID = await getChannelId(guildId);
+
+      const data = {
+        characters: await getCharsData(chaName),
+        username,
+        globalName,
+        userId,
+      };
+
+      try {
+        await handleSaveUser(guild, guildId, userId, data);
+        await interaction.reply({
+          content: `\n${globalName}님의 ${chaName} 원정대를 로레디에 등록하셨어요! 🎉`,
+        });
+      } catch (err) {
+        console.log(err);
+        await interaction.reply({ content: "에러발생🚨 다시 시도해주세요" });
+      }
 
       // 이미 등록된 친구가 아래에 코드를 실행하지 않게 하는 함수 필요
 
-      if (!(await isUserAlreadyRegistered(userId))) {
-        try {
-          const data = {
-            channelId: guildId,
-            username,
-            globalName,
-            userId,
-            characters: JSON.stringify(await getCharsData(chaName)), // 로스트아크 API
-            channels: [CHANNEL_ID],
-          };
+      // if (!(await isUserAlreadyRegistered(userId))) {
+      //   try {
+      //     // const data = {
+      //     //   channelId: guildId,
+      //     //   username,
+      //     //   globalName,
+      //     //   userId,
+      //     //   characters: JSON.stringify(await getCharsData(chaName)), // 로스트아크 API
+      //     //   channels: [CHANNEL_ID],
+      //     // };
 
-          const record = await saveUserData(data);
-          const RECORD_ID = record.id;
+      //     await interaction.reply({
+      //       content: `${globalName}님이 ${chaName} 원정대를 등록하셨어요! 🎉`,
+      //     });
 
-          await updateChannelRelUserData(CHANNEL_ID, {
-            "members+": [RECORD_ID],
-          });
-          await interaction.reply({
-            content: `${globalName}님이 ${chaName} 원정대를 등록하셨어요! 🎉`,
-          });
-
-          console.log(
-            `${globalName}님이 ${chaName} 원정대를 ${CHANNEL_ID} 채널DB에 저장했습니다.`
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      } else {
-        await interaction.reply({
-          content: "이미 등록된 유저입니다 🙅‍♂️",
-        });
-      }
+      //     console.log(
+      //       `${globalName}님이 ${chaName} 원정대를 ${CHANNEL_ID} 채널DB에 저장했습니다.`
+      //     );
+      //   } catch (err) {
+      //     console.log(err);
+      //   }
+      // } else {
+      //   await interaction.reply({
+      //     content: "이미 등록된 유저입니다 🙅‍♂️",
+      //   });
+      // }
     }
 
     if (commandName === "4인레이드") {
