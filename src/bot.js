@@ -48,7 +48,13 @@ client.on("guildDelete", async guild => {
   }
 });
 
-client.on("interactionCreate", handleCommandInteraction);
+client.on("interactionCreate", interaction => {
+  try {
+    handleCommandInteraction(interaction);
+  } catch (err) {
+    console.log("An error occurred while getting interaction:", err);
+  }
+});
 
 async function startBot() {
   try {
