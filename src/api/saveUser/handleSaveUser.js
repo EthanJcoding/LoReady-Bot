@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { firestore } from "../../bot.js";
 
 const handleSaveUser = async (guildId, userId, data) => {
@@ -13,11 +13,11 @@ const handleSaveUser = async (guildId, userId, data) => {
       data.channels = [guildId];
       await setDoc(usersRef, data);
     } else {
-      const { channels } = usersSnap.data();
-      if (!channels.includes(guildId)) {
-        data.channels = [...channels, guildId];
-      }
-      await updateDoc(usersRef, data);
+      // const { channels } = usersSnap.data();
+      // if (!channels.includes(guildId)) {
+      //   data.channels = [...channels, guildId];
+      // }
+      await updateDoc(usersRef, { channels: arrayUnion(guildId) });
     }
   } catch (err) {
     console.log("An error occurred while handling saving user data:", err);

@@ -12,6 +12,8 @@ import {
   createSchedule,
   handleUpdateChannelSchedules,
   handleUpdateMemberSchedule,
+  handleSaveCharacters,
+  getCharacters,
 } from "./api/index.js";
 import { customDateString } from "./utils/customDateString.js";
 import { setTimeout as wait } from "node:timers/promises";
@@ -37,7 +39,6 @@ async function handleCommandInteraction(interaction) {
       const characters = await getCharsData(chaName);
 
       const data = {
-        characters,
         username,
         globalName,
         userId,
@@ -47,8 +48,9 @@ async function handleCommandInteraction(interaction) {
 
       try {
         await interaction.deferReply();
-        await wait(4_000);
+        await wait(10_000);
         await handleSaveUser(guildId, userId, data);
+        await handleSaveCharacters(userId, characters);
         await handleUpdateChannelMembers(guildId, userId);
         await interaction.editReply({
           content: `🎉 \n ${globalName}님의 ${chaName} 원정대를 로레디에 등록하셨어요!  🎉  `,
@@ -73,9 +75,9 @@ async function handleCommandInteraction(interaction) {
         return;
       }
 
-      const USER_DATA = await getUserData(userId);
+      const USER_CHARACTERS = await getCharacters(userId);
 
-      if (!USER_DATA) {
+      if (!USER_CHARACTERS) {
         await interaction.reply({
           content:
             "🚨 \n 본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
@@ -87,7 +89,7 @@ async function handleCommandInteraction(interaction) {
         .setCustomId("selectCharacter")
         .setPlaceholder("레이드에 참여할 캐릭터를 선택해주세요")
         .addOptions(
-          USER_DATA.characters.map(character => {
+          USER_CHARACTERS.map(character => {
             return new StringSelectMenuOptionBuilder()
               .setLabel(character.CharacterName)
               .setDescription(
@@ -112,7 +114,7 @@ async function handleCommandInteraction(interaction) {
       const dataArr = interaction.values[0].split(", ");
       const guildId = interaction.guildId;
       const userId = interaction.user.id;
-      const USER_DATA = await getUserData(userId);
+      const USER_CHARACTERS = await getCharacters(userId);
 
       const data = {
         isActive: true,
@@ -121,12 +123,12 @@ async function handleCommandInteraction(interaction) {
         channel: guildId,
         participants: [userId],
         raidName: dataArr[0],
-        raidLeader: dataArr[3],
+        raidLeader: { userId, character: dataArr[3] },
         raidDate: dataArr[1],
         createdBy: dataArr[2],
         raidType: "4인레이드",
         characters: {
-          [userId]: USER_DATA.characters.find(
+          [userId]: USER_CHARACTERS.find(
             character => character.CharacterName === dataArr[3]
           ),
         },

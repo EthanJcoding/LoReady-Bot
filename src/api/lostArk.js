@@ -97,6 +97,7 @@ const getCharsData = async chaName => {
         characters[i].CharacterLevel = data.data.CharacterLevel;
         characters[i].ItemAvgLevel = data.data.ItemAvgLevel;
         characters[i].ServerName = data.data.ServerName;
+        characters[i].weeklyParticipationHistory = [];
       } else return null;
     }
 
