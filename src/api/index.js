@@ -18,4 +18,18 @@
 import { handleInitBot } from "./handleInitBot/handleInitBot.js";
 import { handleKickBot } from "./handleKickBot/handleKickBot.js";
 import { handleSaveUser } from "./saveUser/handleSaveUser.js";
-export { handleInitBot, handleKickBot, handleSaveUser };
+import { isChannelCollectionExist } from "./isChannelCollectionExist/isChannelCollectionExist.js";
+import { handleUpdateChannelMembers } from "./saveUser/handleUpdateChannelMembers.js";
+import { createSchedule } from "./createSchedule/createSchedule.js";
+import { handleUpdateChannelSchedules } from "./createSchedule/handleUpdateChannelSchedules.js";
+import { handleUpdateMemberSchedule } from "./createSchedule/handleUpdateMemberSchedule.js";
+export {
+  createSchedule,
+  handleInitBot,
+  handleKickBot,
+  handleSaveUser,
+  isChannelCollectionExist,
+  handleUpdateChannelMembers,
+  handleUpdateChannelSchedules,
+  handleUpdateMemberSchedule,
+};
