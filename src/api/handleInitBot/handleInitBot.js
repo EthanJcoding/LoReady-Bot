@@ -16,6 +16,7 @@ const handleInitBot = async guild => {
       created,
       members: [],
       memberIds: [],
+      schedules: [],
     });
   } else {
     const channelIconURL = `https://cdn.discordapp.com/icons/1209059689657016371/0f0a953c0d6c76e50b88304b1b00032e`;
@@ -27,6 +28,7 @@ const handleInitBot = async guild => {
       created,
       members: [],
       memberIds: [],
+      schedules: [],
     });
   }
 };
