@@ -13,6 +13,7 @@ const getUserData = async userId => {
     }
   } catch (err) {
     console.log("An error occurred while getting user data:", err);
+    return;
   }
 };
 

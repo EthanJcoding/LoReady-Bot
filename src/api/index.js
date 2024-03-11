@@ -25,6 +25,8 @@ import { handleUpdateChannelSchedules } from "./createSchedule/handleUpdateChann
 import { handleUpdateMemberSchedule } from "./createSchedule/handleUpdateMemberSchedule.js";
 import { handleSaveCharacters } from "./saveUser/handleSaveCharaters.js";
 import { getCharacters } from "./getCharacters/getCharacters.js";
+import { joinSchedule } from "./joinSchedule/joinSchedule.js";
+import { handleWeeklyParticipation } from "./handleWeeklyParticipation/handleWeeklyParticipation.js";
 
 export {
   createSchedule,
@@ -37,4 +39,6 @@ export {
   handleUpdateMemberSchedule,
   handleSaveCharacters,
   getCharacters,
+  joinSchedule,
+  handleWeeklyParticipation,
 };

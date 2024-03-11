@@ -82,7 +82,11 @@ const handleUpdateChannelMembers = async (guildId, userId) => {
     const channelRef = doc(firestore, "channels", guildId);
     await updateDoc(channelRef, { memberIds: arrayUnion(userId) });
   } catch (err) {
-    "An error occurred while handling updating channel's memberIds:", err;
+    console.log(
+      "An error occurred while handling updating channel's memberIds:",
+      err
+    );
+    return;
   }
 };
 
