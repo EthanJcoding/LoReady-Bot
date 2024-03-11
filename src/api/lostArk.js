@@ -78,28 +78,33 @@ const getData = async chaName => {
 
 // 캐릭터들의 정보 (api 호출이 캐릭당 한번 일어남)
 const getCharsData = async chaName => {
-  const { characters } = await getData(chaName);
+  try {
+    const { characters } = await getData(chaName);
 
-  for (let i = 0; i < characters.length; i++) {
-    let data = await axios.get(
-      url + `/armories/characters/${characters[i].CharacterName}/profiles`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `bearer ${process.env.LOSTARK_API}`,
-        },
-      }
-    );
+    for (let i = 0; i < characters.length; i++) {
+      let data = await axios.get(
+        url + `/armories/characters/${characters[i].CharacterName}/profiles`,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `bearer ${process.env.LOSTARK_API}`,
+          },
+        }
+      );
 
-    if (data) {
-      characters[i].CharacterImage = data.data.CharacterImage;
-      characters[i].CharacterLevel = data.data.CharacterLevel;
-      characters[i].ItemAvgLevel = data.data.ItemAvgLevel;
-      characters[i].ServerName = data.data.ServerName;
-    } else return null;
+      if (data) {
+        characters[i].CharacterImage = data.data.CharacterImage;
+        characters[i].CharacterLevel = data.data.CharacterLevel;
+        characters[i].ItemAvgLevel = data.data.ItemAvgLevel;
+        characters[i].ServerName = data.data.ServerName;
+        characters[i].weeklyParticipationHistory = [];
+      } else return null;
+    }
+
+    return characters;
+  } catch (err) {
+    console.log("An error occurred while getting characters:", err);
   }
-
-  return characters;
 };
 
 export { getCharsData };

@@ -1,0 +1,3 @@
+const handleParticipationHistory = () => {};
+
+export { handleParticipationHistory };
