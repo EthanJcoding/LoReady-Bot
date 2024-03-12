@@ -5,6 +5,7 @@ import { create8pRaid } from "./commands/create8pRaid.js";
 import { joinSchedule } from "./commands/joinSchedule.js";
 import { REST, Routes } from "discord.js";
 import { startBot } from "./bot.js";
+import { checkSchedule } from "./commands/checkSchedule.js";
 
 async function initializeCommands() {
   const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
@@ -14,6 +15,7 @@ async function initializeCommands() {
     create4pRaid,
     create8pRaid,
     joinSchedule,
+    checkSchedule,
   ];
 
   try {
