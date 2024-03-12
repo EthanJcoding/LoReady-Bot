@@ -16,10 +16,13 @@ import {
   getCharacters,
   joinSchedule,
   handleWeeklyParticipation,
+  getChannelSchedules,
+  clearWeeklyHistory,
 } from "./api/index.js";
+import { scheduleDetailListEmbed } from "./embed/index.js";
 import { customDateString } from "./utils/customDateString.js";
 import { setTimeout as wait } from "node:timers/promises";
-import { getChannelSchedules } from "./api/getChannelSchedules/getChannelSchedules.js";
+import dayjs from "dayjs";
 
 async function handleCommandInteraction(interaction) {
   const { commandName, options } = interaction;
@@ -34,6 +37,10 @@ async function handleCommandInteraction(interaction) {
       await isChannelCollectionExist(guild);
     } catch (err) {
       console.log("An error occurred while initiating channel:", err);
+    }
+
+    if (commandName === "test") {
+      await clearWeeklyHistory(userId);
     }
 
     if (commandName === "등록하기") {
@@ -170,7 +177,6 @@ async function handleCommandInteraction(interaction) {
         ephemeral: true,
       });
     }
-
     if (commandName === "스케줄참여") {
       const USER_CHARACTERS = await getCharacters(userId);
 
@@ -185,17 +191,17 @@ async function handleCommandInteraction(interaction) {
       const scheduleList = await getChannelSchedules(guildId);
 
       // participants의 userId를 비교해서 존재하면 필터
-      const userFilteredList = scheduleList.filter(
-        schedule => !schedule.data.participants.includes(userId)
-      );
+      // const userFilteredList = scheduleList.filter(
+      //   schedule => !schedule.data.participants.includes(userId)
+      // );
 
-      if (userFilteredList.length === 0) {
-        await interaction.reply({
-          content:
-            "🚨 \n 현재 참여 가능한 스케줄이 없어요 🙅‍♂️ \n 스케줄 명령어: `/4인레이드` or `/8인레이드`",
-        });
-        return;
-      }
+      // if (userFilteredList.length === 0) {
+      //   await interaction.reply({
+      //     content:
+      //       "🚨 \n 현재 참여 가능한 스케줄이 없어요 🙅‍♂️ \n 스케줄 명령어: `/4인레이드` or `/8인레이드`",
+      //   });
+      //   return;
+      // }
 
       const selectMenu = new StringSelectMenuBuilder()
         .setCustomId("joinSchedule")
@@ -204,7 +210,11 @@ async function handleCommandInteraction(interaction) {
           scheduleList.map(schedule => {
             return new StringSelectMenuOptionBuilder()
               .setLabel(schedule.data.raidName)
-              .setDescription(schedule.data.raidDate)
+              .setDescription(
+                `${dayjs(schedule.data.raidDate).format(
+                  "MM월DD일 HH:mm 출발 "
+                )} 공대장: ${schedule.data.raidLeader.character}`
+              )
               .setValue(schedule.scheduleId);
           })
         );
@@ -219,6 +229,31 @@ async function handleCommandInteraction(interaction) {
       // 본인 캐릭 리스트
 
       // 주간 레이드 참여 배열에 스케줄 id 추가
+    }
+    if (commandName === "스케줄확인") {
+      // 스케줄 리스트
+      const scheduleList = await getChannelSchedules(guildId);
+
+      const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId("checkingSchedule")
+        .setPlaceholder("현재 유효한 레이드 리스트에요!")
+        .addOptions(
+          scheduleList.map(schedule => {
+            return new StringSelectMenuOptionBuilder()
+              .setLabel(schedule.data.raidName)
+              .setDescription(
+                `${dayjs(schedule.data.raidDate).format("MM월DD일 HH:mm 출발")}`
+              )
+              .setValue(schedule.scheduleId);
+          })
+        );
+
+      const row = new ActionRowBuilder().addComponents(selectMenu);
+
+      await interaction.reply({
+        components: [row],
+        ephemeral: true,
+      });
     }
   } else if (interaction.isStringSelectMenu()) {
     if (interaction.customId === "select4pCharacter") {
@@ -236,7 +271,7 @@ async function handleCommandInteraction(interaction) {
         raidDate,
         createdBy: userId,
         raidType: "4인레이드",
-        characters: [{ userId, character }],
+        characters: { party0: [{ userId, character }], party1: [], party2: [] },
       };
 
       try {
@@ -321,7 +356,19 @@ async function handleCommandInteraction(interaction) {
 
       await joinSchedule(scheduleId, userId, character);
       await handleWeeklyParticipation(userId, character, scheduleId);
-      await interaction.reply({ content: "스케줄 추가 완료" });
+      await handleUpdateMemberSchedule(scheduleId, userId);
+      await interaction.reply({
+        content: "레이드에 참여했습니다!",
+        embeds: await scheduleDetailListEmbed(scheduleId, guildId),
+      });
+    }
+
+    if (interaction.customId === "checkingSchedule") {
+      const [scheduleId] = interaction.values;
+
+      await interaction.reply({
+        embeds: await scheduleDetailListEmbed(scheduleId, guildId),
+      });
     }
   }
 }

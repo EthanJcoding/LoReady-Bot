@@ -27,7 +27,10 @@ import { handleSaveCharacters } from "./saveUser/handleSaveCharaters.js";
 import { getCharacters } from "./getCharacters/getCharacters.js";
 import { joinSchedule } from "./joinSchedule/joinSchedule.js";
 import { handleWeeklyParticipation } from "./handleWeeklyParticipation/handleWeeklyParticipation.js";
-
+import { getSchedule } from "./getSchedule/getSchedule.js";
+import { getChannelSchedules } from "./getChannelSchedules/getChannelSchedules.js";
+import { getUserData } from "./getUserData/getUserData.js";
+import { clearWeeklyHistory } from "./clearWeeklyHistory/clearWeeklyHistory.js";
 export {
   createSchedule,
   handleInitBot,
@@ -40,5 +43,9 @@ export {
   handleSaveCharacters,
   getCharacters,
   joinSchedule,
+  getSchedule,
   handleWeeklyParticipation,
+  getChannelSchedules,
+  getUserData,
+  clearWeeklyHistory,
 };
