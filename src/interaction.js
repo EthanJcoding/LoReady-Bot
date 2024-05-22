@@ -20,8 +20,11 @@ import {
 } from "./api/index.js";
 import { scheduleDetailListEmbed } from "./embed/index.js";
 import { customDateString } from "./utils/customDateString.js";
-import { setTimeout as wait } from "node:timers/promises";
 import dayjs from "dayjs";
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function handleCommandInteraction(interaction) {
   const { commandName, options } = interaction;
@@ -43,6 +46,8 @@ async function handleCommandInteraction(interaction) {
     }
 
     if (commandName === "등록하기") {
+      await interaction.deferReply();
+
       const chaName = options.getString("캐릭터명");
       const characters = await getCharsData(chaName);
 
@@ -59,9 +64,7 @@ async function handleCommandInteraction(interaction) {
         await interaction.reply({ content: "캐릭터 정보를 찾을 수 없어요 😭" });
       } else {
         try {
-          await interaction.deferReply();
-
-          await wait(4_000);
+          await wait(10_000);
           await handleSaveUser(guildId, userId, data);
           await handleSaveCharacters(userId, characters);
           await handleUpdateChannelMembers(guildId, userId);
@@ -70,7 +73,9 @@ async function handleCommandInteraction(interaction) {
             content: `🎉 \n ${globalName}님의 ${chaName} 원정대를 로레디에 등록하셨어요!  🎉  `,
           });
         } catch (err) {
-          // await interaction.reply({ content: "에러발생🚨 다시 시도해주세요" });
+          await interaction.editReply({
+            content: "에러발생🚨 다시 시도해주세요",
+          });
           console.log(
             "An error occurred while saving user data in endline:",
             err
@@ -78,6 +83,7 @@ async function handleCommandInteraction(interaction) {
         }
       }
     }
+
     if (commandName === "4인레이드") {
       const raidName = options.getString("레이드");
       const date = options.getString("날짜");
