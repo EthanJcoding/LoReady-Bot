@@ -1,4 +1,4 @@
-import { saveUser } from "./commands/SaveUser.js";
+import { saveUser } from "./commands/saveUser.js";
 import { testCommand } from "./commands/test.js";
 import { create4pRaid } from "./commands/create4pRaid.js";
 import { create8pRaid } from "./commands/create8pRaid.js";
