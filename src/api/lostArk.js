@@ -76,14 +76,14 @@ const getData = async chaName => {
   return mergeArraysToCharacters(json);
 };
 
-// 캐릭터들의 정보 (api 호출이 캐릭당 한번 일어남)
-const getCharsData = async chaName => {
+const getUserDetailInfo = async chaName => {
   try {
     const { characters } = await getData(chaName);
 
     for (let i = 0; i < characters.length; i++) {
       let data = await axios.get(
-        url + `/armories/characters/${characters[i].CharacterName}/profiles`,
+        url +
+          `/armories/characters/${characters[i].CharacterName}?filters=profiles%2Bequipment%2Bengravings%2Bcards%2Bgems`,
         {
           headers: {
             accept: "application/json",
@@ -93,11 +93,18 @@ const getCharsData = async chaName => {
       );
 
       if (data) {
-        characters[i].CharacterImage = data.data.CharacterImage;
-        characters[i].CharacterLevel = data.data.CharacterLevel;
-        characters[i].ItemAvgLevel = data.data.ItemAvgLevel;
-        characters[i].ServerName = data.data.ServerName;
-        characters[i].weeklyParticipationHistory = [];
+        // characters[i].weeklyParticipationHistory = [];
+        // characters[i].CharacterImage = data.data.ArmoryProfile.CharacterImage;
+        // characters[i].CharacterLevel = data.data.ArmoryProfile.CharacterLevel;
+        // characters[i].ItemAvgLevel = data.data.ArmoryProfile.ItemAvgLevel;
+        // characters[i].ServerName = data.data.ArmoryProfile.ServerName;
+
+        console.log(data.data.ArmoryEquipment);
+
+        // characters[i].ArmoryEquipment = data.data.ArmoryEquipment;
+        // characters[i].ArmoryEngraving = data.data.ArmoryEngraving;
+        // characters[i].ArmoryCard = data.data.ArmoryCard;
+        // characters[i].ArmoryGem = data.data.ArmoryGem;
       } else return null;
     }
 
@@ -107,4 +114,36 @@ const getCharsData = async chaName => {
   }
 };
 
-export { getCharsData };
+// 캐릭터들의 정보 (api 호출이 캐릭당 한번 일어남)
+const getCharsData = async chaName => {
+  try {
+    const { characters } = await getData(chaName);
+
+    for (let i = 0; i < characters.length; i++) {
+      let data = await axios.get(
+        url +
+          `/armories/characters/${characters[i].CharacterName}?filters=profiles%2Bequipment%2Bengravings%2Bcards%2Bgems`,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `bearer ${process.env.LOSTARK_API}`,
+          },
+        }
+      );
+
+      if (data) {
+        characters[i].weeklyParticipationHistory = [];
+        characters[i].CharacterImage = data.data.ArmoryProfile.CharacterImage;
+        characters[i].CharacterLevel = data.data.ArmoryProfile.CharacterLevel;
+        characters[i].ItemAvgLevel = data.data.ArmoryProfile.ItemAvgLevel;
+        characters[i].ServerName = data.data.ArmoryProfile.ServerName;
+      } else return null;
+    }
+
+    return characters;
+  } catch (err) {
+    console.log("An error occurred while getting characters:", err);
+  }
+};
+
+export { getCharsData, getUserDetailInfo };

@@ -17,7 +17,11 @@ const handleSaveUser = async (guildId, userId, data) => {
       // if (!channels.includes(guildId)) {
       //   data.channels = [...channels, guildId];
       // }
-      await updateDoc(usersRef, { channels: arrayUnion(guildId) });
+
+      await updateDoc(usersRef, {
+        channels: arrayUnion(guildId),
+        registeredBy: data.registeredBy,
+      });
     }
   } catch (err) {
     console.log("An error occurred while handling saving user data:", err);

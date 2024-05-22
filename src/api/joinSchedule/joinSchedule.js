@@ -5,15 +5,18 @@ const joinSchedule = async (scheduleId, userId, character) => {
   const scheduleRef = doc(firestore, "schedules", scheduleId);
   const scheduleSnap = await getDoc(scheduleRef);
 
-  const { characters } = scheduleSnap.data();
+  const { parties } = scheduleSnap.data();
 
-  const updatedCharacters = { ...characters };
+  const updatedCharacters = { ...parties };
 
   try {
-    updatedCharacters.party0.push({ character, userId });
+    if (updatedCharacters.party1.length >= 4) {
+      updatedCharacters.party2.push({ character, userId });
+    } else updatedCharacters.party1.push({ character, userId });
     updateDoc(scheduleRef, {
       participants: arrayUnion(userId),
-      characters: updatedCharacters,
+      parties: updatedCharacters,
+      characters: arrayUnion({ character, userId }),
     });
   } catch (err) {
     console.log(err);
