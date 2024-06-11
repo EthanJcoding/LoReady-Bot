@@ -20,7 +20,6 @@ import {
 } from "./api/index.js";
 import { scheduleDetailListEmbed } from "./embed/index.js";
 import { customDateString } from "./utils/customDateString.js";
-import { setTimeout as wait } from "node:timers/promises";
 import dayjs from "dayjs";
 
 async function handleCommandInteraction(interaction) {
@@ -43,6 +42,8 @@ async function handleCommandInteraction(interaction) {
     }
 
     if (commandName === "등록하기") {
+      await interaction.deferReply();
+
       const chaName = options.getString("캐릭터명");
       const characters = await getCharsData(chaName);
 
@@ -56,33 +57,36 @@ async function handleCommandInteraction(interaction) {
       };
 
       if (characters.length === 0) {
-        await interaction.reply({ content: "캐릭터 정보를 찾을 수 없어요 😭" });
-      } else {
-        try {
-          await interaction.deferReply();
+        await interaction.editReply({
+          content: "캐릭터 정보를 찾을 수 없어요 😭",
+        });
+        return;
+      }
 
-          await wait(4_000);
-          await handleSaveUser(guildId, userId, data);
-          await handleSaveCharacters(userId, characters);
-          await handleUpdateChannelMembers(guildId, userId);
+      try {
+        await Promise.all([
+          handleSaveUser(guildId, userId, data),
+          handleSaveCharacters(userId, characters),
+          handleUpdateChannelMembers(guildId, userId),
+        ]);
 
-          await interaction.editReply({
-            content: `🎉 \n ${globalName}님의 ${chaName} 원정대를 로레디에 등록하셨어요!  🎉  `,
-          });
-        } catch (err) {
-          // await interaction.reply({ content: "에러발생🚨 다시 시도해주세요" });
-          console.log(
-            "An error occurred while saving user data in endline:",
-            err
-          );
-        }
+        await interaction.editReply({
+          content: `🎉 \n ${globalName}님의 ${chaName} 원정대를 로레디에 등록하셨어요!  🎉  `,
+        });
+      } catch (err) {
+        await interaction.editReply({
+          content: "에러발생🚨 다시 시도해주세요",
+        });
+        console.log("An error occurred while saving user data:", err);
       }
     }
+
     if (commandName === "4인레이드") {
       const raidName = options.getString("레이드");
       const date = options.getString("날짜");
       const time = options.getString("시작시간");
 
+      // Validate date and time format first
       if (!isDateTimeValid(date, time)) {
         await interaction.reply({
           content:
@@ -91,44 +95,59 @@ async function handleCommandInteraction(interaction) {
         return;
       }
 
-      const USER_CHARACTERS = await getCharacters(userId);
+      try {
+        // Fetch user characters
+        const USER_CHARACTERS = await getCharacters(userId);
 
-      if (USER_CHARACTERS.length === 0) {
-        await interaction.reply({
-          content:
-            "🚨 \n 본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
-        });
-        return;
-      }
-      const raidFilteredCharacters = await getRaidFilteredCharacters(
-        USER_CHARACTERS,
-        raidName
-      );
+        if (USER_CHARACTERS.length === 0) {
+          await interaction.reply({
+            content:
+              "🚨 \n 본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
+          });
+          return;
+        }
 
-      const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId("select4pCharacter")
-        .setPlaceholder("레이드에 참여할 캐릭터를 선택해주세요")
-        .addOptions(
-          raidFilteredCharacters.map(character => {
-            return new StringSelectMenuOptionBuilder()
-              .setLabel(character.CharacterName)
-              .setDescription(
-                `${character.CharacterClassName} ${character.ItemAvgLevel} `
-              )
-              .setValue(
-                `${raidName}, ${date} ${time}:00, ${character.CharacterName}`
-              );
-          })
+        // Filter characters for the raid
+        const raidFilteredCharacters = await getRaidFilteredCharacters(
+          USER_CHARACTERS,
+          raidName
         );
 
-      const row = new ActionRowBuilder().addComponents(selectMenu);
+        // Build the select menu options
+        const selectMenuOptions = raidFilteredCharacters.map(character => {
+          return new StringSelectMenuOptionBuilder()
+            .setLabel(character.CharacterName)
+            .setDescription(
+              `${character.CharacterClassName} ${character.ItemAvgLevel}`
+            )
+            .setValue(
+              `${raidName}, ${date} ${time}:00, ${character.CharacterName}`
+            );
+        });
 
-      await interaction.reply({
-        content: `🧐 \n **${raidName}** 레이드에 참여해요!`,
-        components: [row],
-        ephemeral: true,
-      });
+        const selectMenu = new StringSelectMenuBuilder()
+          .setCustomId("select4pCharacter")
+          .setPlaceholder("레이드에 참여할 캐릭터를 선택해주세요")
+          .addOptions(selectMenuOptions);
+
+        const row = new ActionRowBuilder().addComponents(selectMenu);
+
+        await interaction.reply({
+          content: `🧐 \n **${raidName}** 레이드에 참여해요!`,
+          components: [row],
+          ephemeral: true,
+        });
+      } catch (err) {
+        await interaction.reply({
+          content: "에러발생🚨 다시 시도해주세요",
+        });
+        console.log(
+          "An error occurred while processing the 4인레이드 command:",
+          err
+        );
+      }
     }
+
     if (commandName === "8인레이드") {
       const raidName = options.getString("레이드");
       const date = options.getString("날짜");
@@ -291,21 +310,25 @@ async function handleCommandInteraction(interaction) {
 
       try {
         await interaction.deferReply();
-        await wait(10_000);
+
         const scheduleId = await createSchedule(data, userId);
-        // await handleWeeklyParticipation(userId, character, scheduleId);
-        await handleUpdateChannelSchedules(scheduleId, guildId);
-        await handleUpdateMemberSchedule(scheduleId, userId);
+
+        await Promise.all([
+          handleUpdateChannelSchedules(scheduleId, guildId),
+          handleUpdateMemberSchedule(scheduleId, userId),
+        ]);
+
         await interaction.editReply({
-          content: `@everyone \n ${raidName} 레이드 스케줄이 올라왔어요 \n 공대장: ${character} \n 날짜: ${raidDate} \n 스케줄 만든 사람: ${globalName}`,
+          content: `@everyone \n ${raidName} 레이드 스케줄이 올라왔어요 \n 공대장: ${character} \n 날짜: ${raidDate} \n 스케줄 만든 사람: ${globalName} \n http://localhost:3000/${guildId}/schedule/${scheduleId}`,
         });
       } catch (err) {
         console.log(err);
-        await interaction.reply({
+        await interaction.editReply({
           content: "에러발생! 다시 시도해주세요 🥲",
         });
       }
     }
+
     if (interaction.customId === "select8pCharacter") {
       const dataArr = interaction.values[0].split(", ");
       const [raidName, raidDate, character] = dataArr;
@@ -327,21 +350,25 @@ async function handleCommandInteraction(interaction) {
 
       try {
         await interaction.deferReply();
-        await wait(10_000);
+
         const scheduleId = await createSchedule(data, userId);
-        // await handleWeeklyParticipation(userId, character, scheduleId);
-        await handleUpdateChannelSchedules(scheduleId, guildId);
-        await handleUpdateMemberSchedule(scheduleId, userId);
+
+        await Promise.all([
+          handleUpdateChannelSchedules(scheduleId, guildId),
+          handleUpdateMemberSchedule(scheduleId, userId),
+        ]);
+
         await interaction.editReply({
           content: `@everyone \n ${raidName} 레이드 스케줄이 올라왔어요 \n 공대장: ${character} \n 날짜: ${raidDate} \n 스케줄 만든 사람: ${globalName} \n http://localhost:3000/${guildId}/schedule/${scheduleId}`,
         });
       } catch (err) {
         console.log(err);
-        await interaction.reply({
+        await interaction.editReply({
           content: "에러발생! 다시 시도해주세요 🥲",
         });
       }
     }
+
     if (interaction.customId === "joinSchedule") {
       const USER_CHARACTERS = await getCharacters(userId);
       const [scheduleId, raidName] = interaction.values[0].split(",");
