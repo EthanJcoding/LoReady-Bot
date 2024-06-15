@@ -3,7 +3,7 @@ import {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { getCharsData, getUserDetailInfo } from "./api/lostArk.js";
+import { getCharsData } from "./api/lostArk.js";
 import { isDateTimeValid } from "./utils/isDateTimeValid.js";
 import {
   handleSaveUser,
@@ -35,10 +35,6 @@ async function handleCommandInteraction(interaction) {
       await isChannelCollectionExist(guild);
     } catch (err) {
       console.log("An error occurred while initiating channel:", err);
-    }
-
-    if (commandName === "test") {
-      await getUserDetailInfo("태권도노란띠브레이커");
     }
 
     if (commandName === "등록하기") {
@@ -80,7 +76,6 @@ async function handleCommandInteraction(interaction) {
         console.log("An error occurred while saving user data:", err);
       }
     }
-
     if (commandName === "4인레이드") {
       const raidName = options.getString("레이드");
       const date = options.getString("날짜");
@@ -147,7 +142,6 @@ async function handleCommandInteraction(interaction) {
         );
       }
     }
-
     if (commandName === "8인레이드") {
       const raidName = options.getString("레이드");
       const date = options.getString("날짜");
@@ -318,8 +312,14 @@ async function handleCommandInteraction(interaction) {
           handleUpdateMemberSchedule(scheduleId, userId),
         ]);
 
+        const { embeds, components } = await scheduleDetailListEmbed(
+          scheduleId,
+          guildId
+        );
+
         await interaction.editReply({
-          content: `@everyone \n ${raidName} 레이드 스케줄이 올라왔어요 \n 공대장: ${character} \n 날짜: ${raidDate} \n 스케줄 만든 사람: ${globalName} \n http://localhost:3000/${guildId}/schedule/${scheduleId}`,
+          embeds,
+          components,
         });
       } catch (err) {
         console.log(err);
@@ -328,7 +328,6 @@ async function handleCommandInteraction(interaction) {
         });
       }
     }
-
     if (interaction.customId === "select8pCharacter") {
       const dataArr = interaction.values[0].split(", ");
       const [raidName, raidDate, character] = dataArr;
@@ -358,8 +357,14 @@ async function handleCommandInteraction(interaction) {
           handleUpdateMemberSchedule(scheduleId, userId),
         ]);
 
+        const { embeds, components } = await scheduleDetailListEmbed(
+          scheduleId,
+          guildId
+        );
+
         await interaction.editReply({
-          content: `@everyone \n ${raidName} 레이드 스케줄이 올라왔어요 \n 공대장: ${character} \n 날짜: ${raidDate} \n 스케줄 만든 사람: ${globalName} \n http://localhost:3000/${guildId}/schedule/${scheduleId}`,
+          embeds,
+          components,
         });
       } catch (err) {
         console.log(err);
@@ -368,7 +373,6 @@ async function handleCommandInteraction(interaction) {
         });
       }
     }
-
     if (interaction.customId === "joinSchedule") {
       const USER_CHARACTERS = await getCharacters(userId);
       const [scheduleId, raidName] = interaction.values[0].split(",");
@@ -410,12 +414,17 @@ async function handleCommandInteraction(interaction) {
         embeds: await scheduleDetailListEmbed(scheduleId, guildId),
       });
     }
-
     if (interaction.customId === "checkingSchedule") {
       const [scheduleId] = interaction.values;
 
+      const { embeds, components } = await scheduleDetailListEmbed(
+        scheduleId,
+        guildId
+      );
+
       await interaction.reply({
-        embeds: await scheduleDetailListEmbed(scheduleId, guildId),
+        embeds,
+        components,
       });
     }
   }

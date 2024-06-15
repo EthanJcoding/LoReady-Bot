@@ -32,6 +32,7 @@ import { getChannelSchedules } from "./getChannelSchedules/getChannelSchedules.j
 import { getUserData } from "./getUserData/getUserData.js";
 import { clearWeeklyHistory } from "./clearWeeklyHistory/clearWeeklyHistory.js";
 import { getRaidFilteredCharacters } from "./getRaidFilteredCharacters/getRaidFilteredCharacters.js";
+
 export {
   createSchedule,
   handleInitBot,
