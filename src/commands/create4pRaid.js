@@ -9,7 +9,7 @@ const create4pRaid = new SlashCommandBuilder()
       .setDescription("어떤 레이드에 가시나요? 🧐")
       .setRequired(true)
       .setChoices(
-        { name: "쿠크세이튼", value: "쿠크세이튼" },
+        { name: "쿠크세이튼 [노말]", value: "쿠크세이튼 [노말]" },
         { name: "카양겔 [노말]", value: "카양겔 [노말]" },
         { name: "카양겔 [하드]", value: "카양겔 [하드]" },
         { name: "상아탑 [노말]", value: "상아탑 [노말]" },
