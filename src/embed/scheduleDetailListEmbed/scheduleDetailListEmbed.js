@@ -40,7 +40,7 @@ const scheduleDetailListEmbed = async (scheduleId, guildId) => {
     const raidLeaderData = await getUserData(schedule.raidLeader.userId);
     const nop = schedule.participants.length + "/" + schedule.raidType[0];
     const Title = schedule.raidType + " " + schedule.raidName;
-    const URL = `${process.env.BASE_URL}/${guildId}/schedule/${scheduleId}`;
+    const URL = `${process.env.BASE_URL}/${guildId}/schedule/${scheduleId}?join=true`;
 
     const raidImage = getRaidImage(schedule.raidName);
 
