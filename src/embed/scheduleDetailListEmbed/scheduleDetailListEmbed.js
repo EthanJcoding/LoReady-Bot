@@ -9,28 +9,31 @@ import dayjs from "dayjs";
 
 function getRaidImage(raidName) {
   if (raidName.includes("아브렐슈드")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251063201190383666/1ca3910779e47e71.webp?ex=666d36e6&is=666be566&hm=d772643701d2e047339d1184dc731e3efaf2251c0031988478741354cbd2e2f5&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%8B%E1%85%A1%E1%84%87%E1%85%B3%E1%84%85%E1%85%A6%E1%86%AF%E1%84%89%E1%85%B2%E1%84%83%E1%85%B3.webp?alt=media&token=89565bad-e98f-43bc-8b92-d47aacb5b682";
   }
   if (raidName.includes("쿠크세이튼")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251063201617940531/d06fa32b7dbc099d.webp?ex=666d36e6&is=666be566&hm=a959a06eb2075075eba99f372d055c18f036d4d98985a84f42b6d93280967e37&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%8F%E1%85%AE%E1%84%8F%E1%85%B3%E1%84%89%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%90%E1%85%B3%E1%86%AB.webp?alt=media&token=182561cd-7348-42a0-92cb-1b5b43cf306c";
   }
   if (raidName.includes("발탄")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251063201995423785/f2396d29f0326372.webp?ex=666d36e6&is=666be566&hm=c4abb17949081fc4ab8ff46e8d42279c757bb23fed00251f6313d9b348df37ed&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%87%E1%85%A1%E1%86%AF%E1%84%90%E1%85%A1%E1%86%AB.webp?alt=media&token=98e87964-ab4a-4919-a585-e207abce53ac";
   }
   if (raidName.includes("비아키스")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251063202368983073/074ec4517d1dd500.webp?ex=666d36e7&is=666be567&hm=3cb3924df8fa7f098df17dab34f49fd40935682edeac6f97cb2a0aebfc4145db&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%87%E1%85%B5%E1%84%8B%E1%85%A1%E1%84%8F%E1%85%B5%E1%84%89%E1%85%B3.webp?alt=media&token=630fa548-03a0-4bd7-a5e3-98d83ad492d4";
   }
   if (raidName.includes("카멘")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251063202683420702/53170efa06280f89.webp?ex=666d36e7&is=666be567&hm=85b5d2491a8d835d2e1d2173d789a6de19cc254ac76d42068d6944e592b9e7f1&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%8F%E1%85%A1%E1%84%86%E1%85%A6%E1%86%AB.webp?alt=media&token=8969780d-5d8e-4988-93b3-b1c4d2cff1a7";
   }
   if (raidName.includes("일리아칸")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251063203048329297/59ac7c8c85b99e12.webp?ex=666d36e7&is=666be567&hm=8e4f19d2e3b6b16e34b95a7ce805d10fef53f752ab5724738853625804ec33e1&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%8B%E1%85%B5%E1%86%AF%E1%84%85%E1%85%B5%E1%84%8B%E1%85%A1%E1%84%8F%E1%85%A1%E1%86%AB.webp?alt=media&token=66a1cea0-57b2-4217-a37c-5e9a90a95ab0";
   }
   if (raidName.includes("카양겔")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251097370406686791/0566490b5a87f574.webp?ex=666d56b9&is=666c0539&hm=2910e9f6401efd5af7c2068988243f21c6b4dd0825914eda0f4d61035af5f7e3&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%85%E1%85%A1%E1%84%8B%E1%85%AE%E1%84%85%E1%85%B5%E1%84%8B%E1%85%A6%E1%86%AF.webp?alt=media&token=0b4ee0fc-ed3b-45eb-8b75-dfe3d814692b";
   }
   if (raidName.includes("상아탑")) {
-    return "https://cdn.discordapp.com/attachments/1251062202102714409/1251098258583846944/4b0eed83a9c5511e.webp?ex=666d578d&is=666c060d&hm=bfdcd1a485eeb2bdd37219833444639090cdb7271cddbee45360866d7dd1e6f4&";
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A1%E1%84%90%E1%85%A1%E1%86%B8.webp?alt=media&token=91cba7ec-c2fa-4578-8a41-1b8d3817653e";
+  }
+  if (raidName.includes("에키드나")) {
+    return "https://firebasestorage.googleapis.com/v0/b/loready.appspot.com/o/%E1%84%8B%E1%85%A6%E1%84%8F%E1%85%B5%E1%84%83%E1%85%B3%E1%84%82%E1%85%A1.webp?alt=media&token=2f581f70-54b8-4229-a3da-40142ae41511";
   }
 }
 
@@ -38,18 +41,26 @@ const scheduleDetailListEmbed = async (scheduleId, guildId) => {
   try {
     const schedule = await getSchedule(scheduleId);
     const raidLeaderData = await getUserData(schedule.raidLeader.userId);
-    const nop = schedule.participants.length + "/" + schedule.raidType[0];
-    const Title = schedule.raidType + " " + schedule.raidName;
-    const URL = `${process.env.BASE_URL}/${guildId}/schedule/${scheduleId}?join=true`;
+    const nop = `${schedule.participants.length}/${schedule.raidType[0]}`;
+    const Title = `${schedule.raidType} ${schedule.raidName}`;
+    const baseUrl = process.env.BASE_URL;
+    if (!baseUrl) {
+      throw new Error("BASE_URL environment variable is not set");
+    }
+    const URL = `${baseUrl}/${guildId}/schedule/${scheduleId}?join=true`;
 
     const raidImage = getRaidImage(schedule.raidName);
+
+    if (!raidImage) {
+      throw new Error("Invalid raid image URL");
+    }
 
     const embedBuilder = new EmbedBuilder()
       .setColor(0x0099ff)
       .setTitle(Title)
       .setURL(URL)
       .setAuthor({
-        name: raidLeaderData.globalName + "님이 만드신 스케줄이에요!",
+        name: `${raidLeaderData.globalName}님이 만드신 스케줄이에요!`,
         url: URL,
       })
       .setDescription(
@@ -60,9 +71,8 @@ const scheduleDetailListEmbed = async (scheduleId, guildId) => {
         { name: "공대장", value: schedule.raidLeader.character },
         { name: "\u200B", value: "\u200B" },
         { name: "공대 인원 정보", value: nop }
-      );
-
-    embedBuilder.setTimestamp();
+      )
+      .setTimestamp();
 
     const button = new ButtonBuilder()
       .setLabel("레이드 참여하기")
