@@ -23,7 +23,6 @@ import { handleUpdateChannelMembers } from "./saveUser/handleUpdateChannelMember
 import { createSchedule } from "./createSchedule/createSchedule.js";
 import { handleUpdateChannelSchedules } from "./createSchedule/handleUpdateChannelSchedules.js";
 import { handleUpdateMemberSchedule } from "./createSchedule/handleUpdateMemberSchedule.js";
-import { handleSaveCharacters } from "./saveUser/handleSaveCharaters.js";
 import { getCharacters } from "./getCharacters/getCharacters.js";
 import { joinSchedule } from "./joinSchedule/joinSchedule.js";
 import { handleWeeklyParticipation } from "./handleWeeklyParticipation/handleWeeklyParticipation.js";
@@ -32,6 +31,7 @@ import { getChannelSchedules } from "./getChannelSchedules/getChannelSchedules.j
 import { getUserData } from "./getUserData/getUserData.js";
 import { clearWeeklyHistory } from "./clearWeeklyHistory/clearWeeklyHistory.js";
 import { getRaidFilteredCharacters } from "./getRaidFilteredCharacters/getRaidFilteredCharacters.js";
+import { saveCharacter } from "./saveCharacter/saveCharacter.js";
 
 export {
   createSchedule,
@@ -42,7 +42,6 @@ export {
   handleUpdateChannelMembers,
   handleUpdateChannelSchedules,
   handleUpdateMemberSchedule,
-  handleSaveCharacters,
   getCharacters,
   joinSchedule,
   getSchedule,
@@ -51,4 +50,5 @@ export {
   getUserData,
   clearWeeklyHistory,
   getRaidFilteredCharacters,
+  saveCharacter,
 };
