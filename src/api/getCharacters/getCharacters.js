@@ -1,23 +1,20 @@
-import { collection, doc, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { firestore } from "../../bot.js";
 
 const getCharacters = async userId => {
   const userRef = doc(firestore, "users", userId);
-  const charactersCollectionRef = collection(userRef, "characters");
 
   try {
-    const querySnapshot = await getDocs(charactersCollectionRef);
+    const userSnapshot = await getDoc(userRef);
 
-    const characters = [];
+    const { registeredBy } = userSnapshot.data();
+    const characterRef = doc(firestore, "characters", registeredBy);
+    const characterSnapshot = await getDoc(characterRef);
+    const { siblingsData } = characterSnapshot.data();
 
-    querySnapshot.forEach(doc => {
-      characters.push(doc.data());
-    });
-
-    return characters;
+    return siblingsData;
   } catch (error) {
-    console.error("Error accessing character subcollection:", error);
-    return [];
+    console.error("Error accessing character collection:", error);
   }
 };
 
