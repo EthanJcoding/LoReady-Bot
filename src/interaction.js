@@ -3,7 +3,6 @@ import {
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
-import { getCharsData } from "./api/lostArk.js";
 import { isDateTimeValid } from "./utils/isDateTimeValid.js";
 import {
   handleSaveUser,
@@ -12,14 +11,15 @@ import {
   createSchedule,
   handleUpdateChannelSchedules,
   handleUpdateMemberSchedule,
-  handleSaveCharacters,
   getCharacters,
   joinSchedule,
   getChannelSchedules,
   getRaidFilteredCharacters,
+  saveCharacter,
 } from "./api/index.js";
 import { scheduleDetailListEmbed } from "./embed/index.js";
 import { customDateString } from "./utils/customDateString.js";
+import { getCharacter } from "./api/lostArk.js";
 import dayjs from "dayjs";
 
 async function handleCommandInteraction(interaction) {
@@ -41,7 +41,8 @@ async function handleCommandInteraction(interaction) {
       await interaction.deferReply();
 
       const chaName = options.getString("캐릭터명");
-      const characters = await getCharsData(chaName);
+      const isExistingCharacter =
+        (await getCharacter(chaName)) === null ? false : true;
 
       const data = {
         registeredBy: chaName,
@@ -52,7 +53,7 @@ async function handleCommandInteraction(interaction) {
         schedules: [],
       };
 
-      if (characters.length === 0) {
+      if (!isExistingCharacter) {
         await interaction.editReply({
           content: "캐릭터 정보를 찾을 수 없어요 😭",
         });
@@ -61,8 +62,8 @@ async function handleCommandInteraction(interaction) {
 
       try {
         await Promise.all([
+          saveCharacter(chaName),
           handleSaveUser(guildId, userId, data),
-          handleSaveCharacters(userId, characters),
           handleUpdateChannelMembers(guildId, userId),
         ]);
 
@@ -85,7 +86,7 @@ async function handleCommandInteraction(interaction) {
       if (!isDateTimeValid(date, time)) {
         await interaction.reply({
           content:
-            "🚨 \n 잘못된 날짜 또는 시간 형식이에요 🙅‍♂️ \n 날짜 형식: YYYY-MM-DD, 시간 형식: HH:MM",
+            "잘못된 날짜 또는 시간 형식이에요 🙅‍♂️ \n 날짜 형식: YYYY-MM-DD, 시간 형식: HH:MM",
         });
         return;
       }
@@ -97,7 +98,7 @@ async function handleCommandInteraction(interaction) {
         if (USER_CHARACTERS.length === 0) {
           await interaction.reply({
             content:
-              "🚨 \n 본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
+              "본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
           });
           return;
         }
@@ -128,7 +129,7 @@ async function handleCommandInteraction(interaction) {
         const row = new ActionRowBuilder().addComponents(selectMenu);
 
         await interaction.reply({
-          content: `🧐 \n **${raidName}** 레이드에 참여해요!`,
+          content: `**${raidName}** 레이드에 참여해요!🧐`,
           components: [row],
           ephemeral: true,
         });
@@ -150,7 +151,7 @@ async function handleCommandInteraction(interaction) {
       if (!isDateTimeValid(date, time)) {
         await interaction.reply({
           content:
-            "🚨 \n 잘못된 날짜 또는 시간 형식이에요 🙅‍♂️ \n 날짜 형식: YYYY-MM-DD, 시간 형식: HH:MM",
+            "잘못된 날짜 또는 시간 형식이에요 🙅‍♂️ \n 날짜 형식: YYYY-MM-DD, 시간 형식: HH:MM",
         });
         return;
       }
@@ -162,7 +163,7 @@ async function handleCommandInteraction(interaction) {
       if (USER_CHARACTERS.length === 0) {
         await interaction.reply({
           content:
-            "🚨 \n 본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
+            "본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
         });
         return;
       }
@@ -191,7 +192,7 @@ async function handleCommandInteraction(interaction) {
       const row = new ActionRowBuilder().addComponents(selectMenu);
 
       await interaction.reply({
-        content: `🧐 \n **${raidName}** 레이드에 참여해요!`,
+        content: `**${raidName}** 레이드에 참여해요!`,
         components: [row],
         ephemeral: true,
       });
@@ -202,7 +203,7 @@ async function handleCommandInteraction(interaction) {
       if (USER_CHARACTERS.length === 0) {
         await interaction.reply({
           content:
-            "🚨 \n 본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
+            "본인 캐릭터를 먼저 로레디에 등록해주세요 🙅‍♂️ \n 등록 명령어: `/등록하기`",
         });
         return;
       }
@@ -217,7 +218,7 @@ async function handleCommandInteraction(interaction) {
       if (userFilteredList.length === 0) {
         await interaction.reply({
           content:
-            "🚨 \n 현재 참여 가능한 스케줄이 없어요 🙅‍♂️ \n 스케줄 명령어: `/4인레이드` or `/8인레이드`",
+            "현재 참여 가능한 스케줄이 없어요 🙅‍♂️ \n 스케줄 명령어: `/4인레이드` or `/8인레이드`",
         });
         return;
       }
@@ -382,6 +383,13 @@ async function handleCommandInteraction(interaction) {
         raidName
       );
 
+      if (raidFilteredCharacters.length === 0) {
+        await interaction.reply({
+          content: `${raidName}에 참여할 수 있는 캐릭터가 없어요 🥲`,
+        });
+        return;
+      }
+
       const selectMenu = new StringSelectMenuBuilder()
         .setCustomId("selectCharacter")
         .setPlaceholder("레이드에 참여할 캐릭터를 선택해주세요")
@@ -407,11 +415,17 @@ async function handleCommandInteraction(interaction) {
       const [character, scheduleId] = interaction.values[0].split(", ");
 
       await joinSchedule(scheduleId, userId, character);
-      // await handleWeeklyParticipation(userId, character, scheduleId);
       await handleUpdateMemberSchedule(scheduleId, userId);
+
+      const { embeds, components } = await scheduleDetailListEmbed(
+        scheduleId,
+        guildId
+      );
+
       await interaction.reply({
         content: "레이드에 참여했습니다!",
-        embeds: await scheduleDetailListEmbed(scheduleId, guildId),
+        embeds,
+        components,
       });
     }
     if (interaction.customId === "checkingSchedule") {
